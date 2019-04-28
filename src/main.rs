@@ -1,30 +1,59 @@
 extern crate reqwest;
 extern crate serde;
 extern crate serde_json;
+use serde::Deserialize;
 use std::io::{self, Write};
 
-#[derive(serde::Deserialize, Debug)]
-struct Pokemon {
-	id: u32,
+#[derive(Deserialize)]
+struct PokemonAbility {
+	name: String,
+	url: String,
 }
 
-fn prompt() -> String {
+#[derive(Deserialize)]
+struct PokemonAbilityWrapper {
+	ability: PokemonAbility,
+	is_hidden: bool,
+	slot: u32,
+}
+
+#[derive(Deserialize)]
+struct Pokemon {
+	id: u32,
+	name: String,
+	weight: u32,
+	height: u32,
+	abilities: Vec<PokemonAbilityWrapper>,
+}
+
+fn main() {
+	let query = prompt_name().expect("Could not retrieve user input");
+	let pokemon = fetch(&query).expect("Could not retrieve pokemon");
+
+	println!("\n\nBasic Info\n==========");
+	println!(
+		"id: {id}\nname: {name}\nweight: {weight}\nheight: {height}\n",
+		id = pokemon.id,
+		name = pokemon.name,
+		weight = pokemon.weight,
+		height = pokemon.height,
+	);
+	println!("\nAbilities\n=========");
+	for ability_wrapper in pokemon.abilities.iter() {
+		println!(
+			"{slot}. {name}",
+			slot = ability_wrapper.slot,
+			name = ability_wrapper.ability.name,
+		);
+	}
+}
+
+fn prompt_name() -> Result<String, Box<std::error::Error>> {
 	let mut input = String::new();
 	print!("Name a pokemon: ");
-	io::stdout().flush().unwrap();
-	io::stdin()
-		.read_line(&mut input)
-		.expect("Error reading from STDIN");
-	match input.trim().parse() {
-		Ok(result) => {
-			if result == "" {
-				prompt()
-			} else {
-				result
-			}
-		},
-		Err(_) => prompt(),
-	}
+	io::stdout().flush()?;
+	io::stdin().read_line(&mut input)?;
+	Ok(input.trim().parse()?)
 }
 
 fn fetch(query: &String) -> Result<Pokemon, reqwest::Error> {
@@ -32,9 +61,4 @@ fn fetch(query: &String) -> Result<Pokemon, reqwest::Error> {
 		.get(&format!("https://pokeapi.co/api/v2/pokemon/{}", query))
 		.send()?
 		.json()?)
-}
-
-fn main() {
-	let query = prompt();
-	println!("{:?}", fetch(&query));
 }
