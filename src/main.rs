@@ -3,6 +3,7 @@ extern crate serde;
 extern crate serde_json;
 use serde::Deserialize;
 use std::io::{self, Write};
+use std::error::Error;
 
 #[derive(Deserialize)]
 struct PokemonAbility {
@@ -27,7 +28,7 @@ struct Pokemon {
 }
 
 impl Pokemon {
-    pub fn fetch(name: &String) -> Result<Pokemon, reqwest::Error> {
+    pub fn fetch(name: &str) -> Result<Pokemon, reqwest::Error> {
         Ok(reqwest::Client::new()
             .get(&format!("https://pokeapi.co/api/v2/pokemon/{}", name))
             .send()?
@@ -57,7 +58,7 @@ fn main() {
     }
 }
 
-fn prompt_name() -> Result<String, Box<std::error::Error>> {
+fn prompt_name() -> Result<String, Box<Error>> {
     let mut input = String::new();
     print!("Name a pokemon: ");
     io::stdout().flush()?;
