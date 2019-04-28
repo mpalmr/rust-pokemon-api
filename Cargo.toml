@@ -1,0 +1,9 @@
+[package]
+name = "accounting"
+version = "0.1.0"
+authors = ["Matthew Palmer <matt@silvercreekit.com>"]
+edition = "2018"
+
+[dependencies]
+reqwest = "0.9.15"
+serde = "1.0.90"
