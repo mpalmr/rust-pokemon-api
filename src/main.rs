@@ -1,5 +1,5 @@
 extern crate reqwest;
-// use reqwest::Error;
+use std::error;
 use std::io::{self, Read, Write};
 
 fn prompt() -> String {
@@ -21,13 +21,12 @@ fn prompt() -> String {
 	}
 }
 
-fn fetch(query: &String) -> String {
+fn fetch(query: &String) -> Result<String, Box<error::Error>> {
 	let url = format!("https://pokeapi.co/api/v2/pokemon/{}", query);
-	let mut response = reqwest::get(&url).unwrap();
+	let mut response = reqwest::get(&url)?;
 	let mut body = String::new();
-	response.read_to_string(&mut body).unwrap();
-	println!("body: {}", body);
-	body
+	response.read_to_string(&mut body)?;
+	Ok(body)
 }
 
 fn main() {
