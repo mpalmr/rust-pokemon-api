@@ -1,6 +1,12 @@
 extern crate reqwest;
-use std::error;
-use std::io::{self, Read, Write};
+extern crate serde;
+extern crate serde_json;
+use std::io::{self, Write};
+
+#[derive(serde::Deserialize, Debug)]
+struct Pokemon {
+	id: u32,
+}
 
 fn prompt() -> String {
 	let mut input = String::new();
@@ -21,12 +27,11 @@ fn prompt() -> String {
 	}
 }
 
-fn fetch(query: &String) -> Result<String, Box<error::Error>> {
-	let url = format!("https://pokeapi.co/api/v2/pokemon/{}", query);
-	let mut response = reqwest::get(&url)?;
-	let mut body = String::new();
-	response.read_to_string(&mut body)?;
-	Ok(body)
+fn fetch(query: &String) -> Result<Pokemon, reqwest::Error> {
+	Ok(reqwest::Client::new()
+		.get(&format!("https://pokeapi.co/api/v2/pokemon/{}", query))
+		.send()?
+		.json()?)
 }
 
 fn main() {
