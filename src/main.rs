@@ -26,9 +26,18 @@ struct Pokemon {
 	abilities: Vec<PokemonAbilityWrapper>,
 }
 
+impl Pokemon {
+	pub fn fetch(name: &String) -> Result<Pokemon, reqwest::Error> {
+		Ok(reqwest::Client::new()
+			.get(&format!("https://pokeapi.co/api/v2/pokemon/{}", name))
+			.send()?
+			.json()?)
+	}
+}
+
 fn main() {
 	let query = prompt_name().expect("Could not retrieve user input");
-	let pokemon = fetch(&query).expect("Could not retrieve pokemon");
+	let pokemon = Pokemon::fetch(&query).expect("Could not retrieve pokemon");
 
 	println!("\n\nBasic Info\n==========");
 	println!(
@@ -54,11 +63,4 @@ fn prompt_name() -> Result<String, Box<std::error::Error>> {
 	io::stdout().flush()?;
 	io::stdin().read_line(&mut input)?;
 	Ok(input.trim().parse()?)
-}
-
-fn fetch(query: &String) -> Result<Pokemon, reqwest::Error> {
-	Ok(reqwest::Client::new()
-		.get(&format!("https://pokeapi.co/api/v2/pokemon/{}", query))
-		.send()?
-		.json()?)
 }
