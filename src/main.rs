@@ -1,67 +1,21 @@
 extern crate reqwest;
 extern crate serde;
 extern crate serde_json;
-use serde::Deserialize;
-use std::io::{self, Write};
-use std::error::Error;
 
-#[derive(Deserialize)]
-struct PokemonAbility {
-    name: String,
-    url: String,
-}
+mod prompt;
+mod pokemon;
 
-#[derive(Deserialize)]
-struct PokemonAbilityWrapper {
-    ability: PokemonAbility,
-    is_hidden: bool,
-    slot: u32,
-}
-
-#[derive(Deserialize)]
-struct Pokemon {
-    id: u32,
-    name: String,
-    weight: u32,
-    height: u32,
-    abilities: Vec<PokemonAbilityWrapper>,
-}
-
-impl Pokemon {
-    pub fn fetch(name: &str) -> Result<Pokemon, reqwest::Error> {
-        Ok(reqwest::Client::new()
-            .get(&format!("https://pokeapi.co/api/v2/pokemon/{}", name))
-            .send()?
-            .json()?)
-    }
-}
+use prompt::MoreDetailsOption;
 
 fn main() {
-    let query = prompt_name().expect("Could not retrieve user input");
-    let pokemon = Pokemon::fetch(&query).expect("Could not retrieve pokemon");
-
-    println!("\n\nBasic Info\n==========");
-    println!(
-        "id: {id}\nname: {name}\nweight: {weight}\nheight: {height}\n",
-        id = pokemon.id,
-        name = pokemon.name,
-        weight = pokemon.weight,
-        height = pokemon.height,
-    );
-    println!("\nAbilities\n=========");
-    for ability_wrapper in pokemon.abilities.iter() {
-        println!(
-            "{slot}. {name}",
-            slot = ability_wrapper.slot,
-            name = ability_wrapper.ability.name,
-        );
-    }
-}
-
-fn prompt_name() -> Result<String, Box<Error>> {
-    let mut input = String::new();
-    print!("Name a pokemon: ");
-    io::stdout().flush()?;
-    io::stdin().read_line(&mut input)?;
-    Ok(input.trim().parse()?)
+    let query = prompt::name();
+    let pokemon = pokemon::get_by_name(&query).expect("Could not retrieve pokemon");
+    pokemon.show();
+    match prompt::more_details() {
+        MoreDetailsOption::Abilities => pokemon.show_ability(&prompt::ability_name(&pokemon)),
+        MoreDetailsOption::SearchPokemon => {
+            println!("\n");
+            main()
+        },
+    };
 }
