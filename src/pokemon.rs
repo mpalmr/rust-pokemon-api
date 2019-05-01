@@ -1,7 +1,7 @@
 use reqwest::Error;
 
 mod api {
-    use reqwest::{Error, Client};
+    use reqwest::{Client, Error};
     use serde::Deserialize;
 
     #[derive(Deserialize)]
@@ -26,15 +26,15 @@ mod api {
     }
 
     impl Pokemon {
-        pub fn get_by_name(name: &str) -> Result<Pokemon, Error> {
-            Ok(Pokemon::fetch(&format!("https://pokeapi.co/api/v2/pokemon/{}", name))?)
+        pub fn get_by_name(name: &str) -> Result<Self, Error> {
+            Ok(Self::fetch(&format!(
+                "https://pokeapi.co/api/v2/pokemon/{}",
+                name
+            ))?)
         }
 
-        fn fetch(url: &str) -> Result<Pokemon, Error> {
-            Ok(Client::new()
-                .get(url)
-                .send()?
-                .json()?)
+        fn fetch(url: &str) -> Result<Self, Error> {
+            Ok(Client::new().get(url).send()?.json()?)
         }
     }
 }
@@ -52,15 +52,15 @@ pub struct Pokemon {
 }
 
 impl Pokemon {
-    pub fn new(response: api::Pokemon) -> Pokemon {
+    pub fn new(response: api::Pokemon) -> Self {
         let mut abilities: Vec<Ability> = vec![];
-        for ability in response.abilities.into_iter() {
+        for ability in response.abilities {
             abilities.push(Ability {
-                name: String::from(ability.ability.name),
+                name: ability.ability.name,
             });
         }
 
-        Pokemon {
+        Self {
             id: response.id,
             name: response.name,
             weight: response.weight,
@@ -79,12 +79,12 @@ impl Pokemon {
             height = self.height,
         );
         println!("\nAbilities\n=========");
-        for ability in self.abilities.iter() {
+        for ability in &self.abilities {
             println!("{}", ability.name);
         }
     }
 
-    pub fn show_ability(&self, ability_name: &String) {
+    pub fn show_ability(&self, ability_name: &str) {
         println!("{}", ability_name);
     }
 }

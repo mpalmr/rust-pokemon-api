@@ -1,9 +1,12 @@
+#![warn(clippy::all)]
+#![warn(clippy::pedantic)]
+
 extern crate reqwest;
 extern crate serde;
 extern crate serde_json;
 
-mod prompt;
 mod pokemon;
+mod prompt;
 
 use prompt::MoreDetailsOption;
 
@@ -16,6 +19,6 @@ fn main() {
         MoreDetailsOption::SearchPokemon => {
             println!("\n");
             main()
-        },
+        }
     };
 }
