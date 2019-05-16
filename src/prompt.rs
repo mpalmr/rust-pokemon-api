@@ -10,6 +10,7 @@ pub fn name() -> String {
 }
 
 pub enum MoreDetailsOption {
+    Exit,
     Abilities,
     SearchPokemon,
 }
@@ -17,7 +18,8 @@ pub enum MoreDetailsOption {
 pub fn more_details() -> MoreDetailsOption {
     println!("\n\nWhat would you like to know more about?");
     println!("[1] Abilities");
-    println!("[2] Search for new pokemon\n");
+    println!("[2] Search for new pokemon");
+    println!("[0] Exit\n");
 
     loop {
         let mut input = String::new();
@@ -26,6 +28,7 @@ pub fn more_details() -> MoreDetailsOption {
         io::stdin().read_line(&mut input).unwrap();
 
         match input.trim().parse::<u8>().unwrap() {
+            0 => return MoreDetailsOption::Exit,
             1 => return MoreDetailsOption::Abilities,
             2 => return MoreDetailsOption::SearchPokemon,
             _ => {
