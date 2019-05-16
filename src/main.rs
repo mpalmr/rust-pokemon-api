@@ -14,19 +14,20 @@ fn main() {
         if pokemon_name == "q" {
             break;
         }
-        let pokemon = Pokemon::new(pokemon_name).expect("Could not retrieve pokemon");
-        println!("{}", pokemon);
-
-        match prompt::more_details() {
-            MoreDetailsOption::Exit => break,
-            MoreDetailsOption::SearchPokemon => println!("\n"),
-            MoreDetailsOption::Abilities => {
-                if let Some(name) = prompt::ability_name(&pokemon) {
-                    pokemon.show_ability(name);
-                } else {
-                    println!("\n");
+        if let Ok(pokemon) = Pokemon::new(pokemon_name) {
+            match prompt::more_details() {
+                MoreDetailsOption::Exit => break,
+                MoreDetailsOption::SearchPokemon => println!("\n"),
+                MoreDetailsOption::Abilities => {
+                    if let Some(name) = prompt::ability_name(&pokemon) {
+                        pokemon.show_ability(name);
+                    } else {
+                        println!("\n");
+                    }
                 }
             }
-        };
+        } else {
+            println!("Invalid input.\n");
+        }
     }
 }
