@@ -7,7 +7,6 @@ mod prompt;
 
 use crate::pokemon::Pokemon;
 use prompt::MoreDetailsOption;
-use std::process;
 
 fn main() {
     loop {
@@ -15,7 +14,7 @@ fn main() {
         pokemon.show();
 
         match prompt::more_details() {
-            MoreDetailsOption::Exit => process::exit(0),
+            MoreDetailsOption::Exit => break,
             MoreDetailsOption::SearchPokemon => println!("\n"),
             MoreDetailsOption::Abilities => {
                 if let Some(name) = prompt::ability_name(&pokemon) {
