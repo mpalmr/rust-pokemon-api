@@ -39,24 +39,29 @@ pub fn more_details() -> MoreDetailsOption {
     }
 }
 
-pub fn ability_name(pokemon: &Pokemon) -> &str {
-    println!("\nPick one from the following abilities:");
-    pokemon
-        .abilities
-        .iter()
-        .enumerate()
-        .for_each(|(i, ability)| println!("[{}] {}", i + 1, ability.name));
-
+pub fn ability_name(pokemon: &Pokemon) -> Option<&str> {
     loop {
-        let mut input = String::new();
+        println!("\nPick one from the following abilities:");
+        pokemon
+            .abilities
+            .iter()
+            .enumerate()
+            .for_each(|(i, ability)| println!("[{}] {}", i + 1, ability.name));
+        println!("[0] Go Back");
+
+        let mut index = String::new();
         print!("\nOption: ");
         io::stdout().flush().unwrap();
-        io::stdin().read_line(&mut input).unwrap();
+        io::stdin().read_line(&mut index).unwrap();
+        let index = index.trim().parse::<usize>().unwrap();
 
-        let i = input.trim().parse::<usize>().unwrap() - 1;
-        match pokemon.abilities.get(i) {
-            None => println!("Invalid option."),
-            _ => return &pokemon.abilities[i].name,
+        if index == 0 {
+            return None;
         }
+
+        if let Some(ability) = pokemon.abilities.get(index - 1) {
+            return Some(&ability.name);
+        }
+        println!("Invalid option.");
     }
 }
