@@ -4,6 +4,12 @@ pub struct Ability {
     pub name: String,
 }
 
+impl Ability {
+    pub fn new(ability: api::Ability) -> Self {
+        Self { name: ability.name }
+    }
+}
+
 pub struct Pokemon {
     id: u32,
     name: String,
@@ -22,9 +28,7 @@ impl Pokemon {
             abilities: response
                 .abilities
                 .into_iter()
-                .map(|a| Ability {
-                    name: a.ability.name,
-                })
+                .map(|wrapper| Ability::new(wrapper.ability))
                 .collect(),
         }
     }
