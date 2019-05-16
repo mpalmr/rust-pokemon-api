@@ -1,9 +1,10 @@
 use crate::pokemon::Pokemon;
 use std::io::{self, Write};
+use colored::*;
 
 pub fn name() -> String {
     let mut input = String::new();
-    print!("Name a pokemon or \"q\" to quit: ");
+    print!("{} ", "Name a pokemon or \"q\" to quit:".green().bold());
     io::stdout().flush().unwrap();
     io::stdin().read_line(&mut input).unwrap();
     input.trim().parse::<String>().unwrap()
@@ -16,10 +17,10 @@ pub enum MoreDetailsOption {
 }
 
 pub fn more_details() -> MoreDetailsOption {
-    println!("\n\nWhat would you like to know more about?");
-    println!("[1] Abilities");
-    println!("[2] Search for new pokemon");
-    println!("[0] Exit\n");
+    println!("\n\n{}", "What would you like to know more about?".green().bold());
+    println!("{} {}", "[1]".blue().bold(), "Abilities".blue());
+    println!("{} {}", "[2]".blue().bold(), "Search for new pokemon".blue());
+    println!("{} {}\n", "[0]".red().bold(), "Exit".red());
 
     loop {
         let mut input = String::new();
@@ -32,7 +33,7 @@ pub fn more_details() -> MoreDetailsOption {
             1 => return MoreDetailsOption::Abilities,
             2 => return MoreDetailsOption::SearchPokemon,
             _ => {
-                println!("Invalid option.");
+                println!("{}", "Invalid option.".red());
                 continue;
             }
         }
@@ -41,13 +42,17 @@ pub fn more_details() -> MoreDetailsOption {
 
 pub fn ability_name(pokemon: &Pokemon) -> Option<&str> {
     loop {
-        println!("\nPick one from the following abilities:");
+        println!("\n{}", "Pick one from the following abilities:".green().bold());
         pokemon
             .abilities
             .iter()
             .enumerate()
-            .for_each(|(i, ability)| println!("[{}] {}", i + 1, ability.name));
-        println!("[0] Go Back\n");
+            .for_each(|(i, ability)| println!(
+                "{} {}",
+                &format!("[{}]", (i + 1).to_string()).blue().bold(),
+                ability.name.blue(),
+            ));
+        println!("{} {}\n", "[0]".red().bold(), "Go Back".red());
 
         let mut input = String::new();
         print!("Option: ");
@@ -61,6 +66,6 @@ pub fn ability_name(pokemon: &Pokemon) -> Option<&str> {
         if let Some(ability) = pokemon.abilities.get(input - 1) {
             return Some(&ability.name);
         }
-        println!("Invalid option.");
+        println!("{}", "Invalid option.".red());
     }
 }

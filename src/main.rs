@@ -21,13 +21,9 @@ fn main() {
                 MoreDetailsOption::Abilities => {
                     if let Some(name) = prompt::ability_name(&pokemon) {
                         pokemon.show_ability(name);
-                    } else {
-                        println!("\n");
                     }
                 }
             }
-        } else {
-            println!("Invalid input.\n");
         }
     }
 }
