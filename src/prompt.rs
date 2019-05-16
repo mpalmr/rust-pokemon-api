@@ -1,6 +1,6 @@
-use crate::pokemon::Pokemon;
-use std::io::{self, Write};
+use crate::pokemon::{Pokemon, Ability};
 use colored::*;
+use std::io::{self, Write};
 
 pub fn name() -> String {
     let mut input = String::new();
@@ -17,9 +17,16 @@ pub enum MoreDetailsOption {
 }
 
 pub fn more_details() -> MoreDetailsOption {
-    println!("\n\n{}", "What would you like to know more about?".green().bold());
+    println!(
+        "\n{}",
+        "What would you like to know more about?".green().bold()
+    );
     println!("{} {}", "[1]".blue().bold(), "Abilities".blue());
-    println!("{} {}", "[2]".blue().bold(), "Search for new pokemon".blue());
+    println!(
+        "{} {}",
+        "[2]".blue().bold(),
+        "Search for new pokemon".blue()
+    );
     println!("{} {}\n", "[0]".red().bold(), "Exit".red());
 
     loop {
@@ -40,18 +47,23 @@ pub fn more_details() -> MoreDetailsOption {
     }
 }
 
-pub fn ability_name(pokemon: &Pokemon) -> Option<&str> {
+pub fn ability(pokemon: &Pokemon) -> Option<&Ability> {
     loop {
-        println!("\n{}", "Pick one from the following abilities:".green().bold());
+        println!(
+            "\n{}",
+            "Pick one from the following abilities:".green().bold()
+        );
         pokemon
             .abilities
             .iter()
             .enumerate()
-            .for_each(|(i, ability)| println!(
-                "{} {}",
-                &format!("[{}]", (i + 1).to_string()).blue().bold(),
-                ability.name.blue(),
-            ));
+            .for_each(|(i, ability)| {
+                println!(
+                    "{} {}",
+                    &format!("[{}]", (i + 1).to_string()).blue().bold(),
+                    ability.name.blue(),
+                )
+            });
         println!("{} {}\n", "[0]".red().bold(), "Go Back".red());
 
         let mut input = String::new();
@@ -64,7 +76,7 @@ pub fn ability_name(pokemon: &Pokemon) -> Option<&str> {
             return None;
         }
         if let Some(ability) = pokemon.abilities.get(input - 1) {
-            return Some(&ability.name);
+            return Some(&ability);
         }
         println!("{}", "Invalid option.".red());
     }

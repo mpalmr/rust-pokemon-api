@@ -5,9 +5,10 @@ pub struct Ability {
     pub name: String,
 }
 
-impl Ability {
-    pub fn new(ability: api::Ability) -> Self {
-        Self { name: ability.name }
+impl fmt::Display for Ability {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "Ability\n=======")?;
+        writeln!(f, "Name: {}", self.name)
     }
 }
 
@@ -30,20 +31,17 @@ impl Pokemon {
             abilities: response
                 .abilities
                 .into_iter()
-                .map(|wrapper| Ability::new(wrapper.ability))
+                .map(|wrapper| Ability {
+                    name: wrapper.ability.name,
+                })
                 .collect(),
         })
-    }
-
-    /// Placeholder
-    pub fn show_ability(&self, ability_name: &str) {
-        println!("{}", ability_name);
     }
 }
 
 impl fmt::Display for Pokemon {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "\n\nBasic Info\n==========")?;
+        writeln!(f, "Basic Info\n==========")?;
         writeln!(f, "id: {}", self.id)?;
         writeln!(f, "name: {}", self.name)?;
         writeln!(f, "weight: {}", self.weight)?;

@@ -14,13 +14,15 @@ fn main() {
         if pokemon_name == "q" {
             break;
         }
+
         if let Ok(pokemon) = Pokemon::new(pokemon_name) {
+            println!("\n{}", pokemon);
             match prompt::more_details() {
                 MoreDetailsOption::Exit => break,
                 MoreDetailsOption::SearchPokemon => println!("\n"),
                 MoreDetailsOption::Abilities => {
-                    if let Some(name) = prompt::ability_name(&pokemon) {
-                        pokemon.show_ability(name);
+                    if let Some(ability) = prompt::ability(&pokemon) {
+                        println!("\n\n{}", ability);
                     }
                 }
             }
