@@ -19,8 +19,9 @@ pub struct Pokemon {
 }
 
 impl Pokemon {
-    pub fn new(response: api::Pokemon) -> Self {
-        Self {
+    pub fn new(name: &str) -> Result<Self, reqwest::Error> {
+        let response = api::Pokemon::get_by_name(name)?;
+        Ok(Self {
             id: response.id,
             name: response.name,
             weight: response.weight,
@@ -30,7 +31,7 @@ impl Pokemon {
                 .into_iter()
                 .map(|wrapper| Ability::new(wrapper.ability))
                 .collect(),
-        }
+        })
     }
 
     pub fn show(&self) {
@@ -43,16 +44,11 @@ impl Pokemon {
             height = self.height,
         );
         println!("\nAbilities\n=========");
-        self.abilities.iter().for_each(|ability| {
-            println!("{}", ability.name);
-        });
+        self.abilities.iter().for_each(|ability| println!("{}", ability.name));
     }
 
+    /// Placeholder
     pub fn show_ability(&self, ability_name: &str) {
         println!("{}", ability_name);
     }
-}
-
-pub fn get_by_name(name: &str) -> Result<Pokemon, reqwest::Error> {
-    Ok(Pokemon::new(api::Pokemon::get_by_name(name)?))
 }

@@ -18,11 +18,13 @@ pub fn more_details() -> MoreDetailsOption {
     println!("\n\nWhat would you like to know more about?");
     println!("[1] Abilities");
     println!("[2] Search for new pokemon\n");
+
     loop {
         let mut input = String::new();
         print!("Option: ");
         io::stdout().flush().unwrap();
         io::stdin().read_line(&mut input).unwrap();
+
         match input.trim().parse::<u8>().unwrap() {
             1 => return MoreDetailsOption::Abilities,
             2 => return MoreDetailsOption::SearchPokemon,
@@ -35,20 +37,20 @@ pub fn more_details() -> MoreDetailsOption {
 }
 
 pub fn ability_name(pokemon: &Pokemon) -> &str {
-    println!("Pick one from the following abilities:\n");
+    println!("\nPick one from the following abilities:");
     pokemon
         .abilities
         .iter()
         .enumerate()
-        .for_each(|(i, ability)| {
-            println!("[{}] {}", i, ability.name);
-        });
+        .for_each(|(i, ability)| println!("[{}] {}", i + 1, ability.name));
+
     loop {
         let mut input = String::new();
-        print!("Option: ");
+        print!("\nOption: ");
         io::stdout().flush().unwrap();
         io::stdin().read_line(&mut input).unwrap();
-        let i = input.trim().parse::<usize>().unwrap();
+
+        let i = input.trim().parse::<usize>().unwrap() - 1;
         if i >= pokemon.abilities.len() {
             println!("Invalid option.");
         } else {

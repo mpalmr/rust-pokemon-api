@@ -5,11 +5,11 @@ mod api;
 mod pokemon;
 mod prompt;
 
+use crate::pokemon::Pokemon;
 use prompt::MoreDetailsOption;
 
 fn main() {
-    let query = prompt::name();
-    let pokemon = pokemon::get_by_name(&query).expect("Could not retrieve pokemon");
+    let pokemon = Pokemon::new(&prompt::name()).expect("Could not retrieve pokemon");
     pokemon.show();
     match prompt::more_details() {
         MoreDetailsOption::Abilities => pokemon.show_ability(&prompt::ability_name(&pokemon)),

@@ -24,13 +24,13 @@ pub struct AbilityWrapper {
 
 impl Pokemon {
     pub fn get_by_name(name: &str) -> Result<Self, Error> {
-        Ok(Self::fetch(&format!(
-            "https://pokeapi.co/api/v2/pokemon/{}",
-            name
-        ))?)
+        Ok(Self::fetch(&format!("pokemon/{}", name))?)
     }
 
     fn fetch(url: &str) -> Result<Self, Error> {
-        Ok(Client::new().get(url).send()?.json()?)
+        Ok(Client::new()
+            .get(&format!("https://pokeapi.co/api/v2/{}", url))
+            .send()?
+            .json()?)
     }
 }
