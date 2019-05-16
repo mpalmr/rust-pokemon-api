@@ -10,9 +10,13 @@ use prompt::MoreDetailsOption;
 
 fn main() {
     loop {
-        let pokemon = Pokemon::new(&prompt::name()).expect("Could not retrieve pokemon");
-        pokemon.show();
+        let pokemon_name = &prompt::name();
+        if pokemon_name == "q" {
+            break;
+        }
+        let pokemon = Pokemon::new(pokemon_name).expect("Could not retrieve pokemon");
 
+        pokemon.show();
         match prompt::more_details() {
             MoreDetailsOption::Exit => break,
             MoreDetailsOption::SearchPokemon => println!("\n"),

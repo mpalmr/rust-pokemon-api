@@ -3,7 +3,7 @@ use std::io::{self, Write};
 
 pub fn name() -> String {
     let mut input = String::new();
-    print!("Name a pokemon: ");
+    print!("Name a pokemon or \"q\" to quit: ");
     io::stdout().flush().unwrap();
     io::stdin().read_line(&mut input).unwrap();
     input.trim().parse::<String>().unwrap()
@@ -47,19 +47,18 @@ pub fn ability_name(pokemon: &Pokemon) -> Option<&str> {
             .iter()
             .enumerate()
             .for_each(|(i, ability)| println!("[{}] {}", i + 1, ability.name));
-        println!("[0] Go Back");
+        println!("[0] Go Back\n");
 
-        let mut index = String::new();
-        print!("\nOption: ");
+        let mut input = String::new();
+        print!("Option: ");
         io::stdout().flush().unwrap();
-        io::stdin().read_line(&mut index).unwrap();
-        let index = index.trim().parse::<usize>().unwrap();
+        io::stdin().read_line(&mut input).unwrap();
+        let input = input.trim().parse::<usize>().unwrap();
 
-        if index == 0 {
+        if input == 0 {
             return None;
         }
-
-        if let Some(ability) = pokemon.abilities.get(index - 1) {
+        if let Some(ability) = pokemon.abilities.get(input - 1) {
             return Some(&ability.name);
         }
         println!("Invalid option.");
