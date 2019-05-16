@@ -6,7 +6,7 @@ pub fn name() -> String {
     print!("Name a pokemon: ");
     io::stdout().flush().unwrap();
     io::stdin().read_line(&mut input).unwrap();
-    input.trim().parse().unwrap()
+    input.trim().parse::<String>().unwrap()
 }
 
 pub enum MoreDetailsOption {
@@ -34,11 +34,15 @@ pub fn more_details() -> MoreDetailsOption {
     }
 }
 
-pub fn ability_name(pokemon: &Pokemon) -> &String {
+pub fn ability_name(pokemon: &Pokemon) -> &str {
     println!("Pick one from the following abilities:\n");
-    for (i, ability) in pokemon.abilities.iter().enumerate() {
-        println!("[{}] {}", i, ability.name);
-    }
+    pokemon
+        .abilities
+        .iter()
+        .enumerate()
+        .for_each(|(i, ability)| {
+            println!("[{}] {}", i, ability.name);
+        });
     loop {
         let mut input = String::new();
         print!("Option: ");

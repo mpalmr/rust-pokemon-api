@@ -39,9 +39,9 @@ impl Pokemon {
             height = self.height,
         );
         println!("\nAbilities\n=========");
-        for ability in &self.abilities {
+        self.abilities.iter().for_each(|ability| {
             println!("{}", ability.name);
-        }
+        });
     }
 
     pub fn show_ability(&self, ability_name: &str) {
