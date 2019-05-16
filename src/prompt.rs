@@ -51,10 +51,9 @@ pub fn ability_name(pokemon: &Pokemon) -> &str {
         io::stdin().read_line(&mut input).unwrap();
 
         let i = input.trim().parse::<usize>().unwrap() - 1;
-        if i >= pokemon.abilities.len() {
-            println!("Invalid option.");
-        } else {
-            return &pokemon.abilities[i].name;
+        match pokemon.abilities.get(i) {
+            None => println!("Invalid option."),
+            _ => return &pokemon.abilities[i].name,
         }
     }
 }
