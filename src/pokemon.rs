@@ -1,4 +1,5 @@
 use crate::api;
+use std::fmt;
 
 pub struct Ability {
     pub name: String,
@@ -34,23 +35,22 @@ impl Pokemon {
         })
     }
 
-    pub fn show(&self) {
-        println!("\n\nBasic Info\n==========");
-        println!(
-            "id: {id}\nname: {name}\nweight: {weight}\nheight: {height}\n",
-            id = self.id,
-            name = self.name,
-            weight = self.weight,
-            height = self.height,
-        );
-        println!("\nAbilities\n=========");
-        self.abilities
-            .iter()
-            .for_each(|ability| println!("{}", ability.name));
-    }
-
     /// Placeholder
     pub fn show_ability(&self, ability_name: &str) {
         println!("{}", ability_name);
+    }
+}
+
+impl fmt::Display for Pokemon {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "\n\nBasic Info\n==========")?;
+        writeln!(f, "id: {}", self.id)?;
+        writeln!(f, "name: {}", self.name)?;
+        writeln!(f, "weight: {}", self.weight)?;
+        writeln!(f, "height: {}", self.height)?;
+        writeln!(f, "\nAbilities\n=========")?;
+        self.abilities
+            .iter()
+            .try_for_each(|ability| writeln!(f, "{}", ability.name))
     }
 }

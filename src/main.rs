@@ -15,8 +15,8 @@ fn main() {
             break;
         }
         let pokemon = Pokemon::new(pokemon_name).expect("Could not retrieve pokemon");
+        println!("{}", pokemon);
 
-        pokemon.show();
         match prompt::more_details() {
             MoreDetailsOption::Exit => break,
             MoreDetailsOption::SearchPokemon => println!("\n"),
