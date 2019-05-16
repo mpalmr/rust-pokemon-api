@@ -14,19 +14,18 @@ pub struct Pokemon {
 
 impl Pokemon {
     pub fn new(response: api::Pokemon) -> Self {
-        let mut abilities: Vec<Ability> = vec![];
-        for ability in response.abilities {
-            abilities.push(Ability {
-                name: ability.ability.name,
-            });
-        }
-
         Self {
             id: response.id,
             name: response.name,
             weight: response.weight,
             height: response.height,
-            abilities,
+            abilities: response
+                .abilities
+                .into_iter()
+                .map(|a| Ability {
+                    name: a.ability.name,
+                })
+                .collect(),
         }
     }
 
