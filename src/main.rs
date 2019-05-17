@@ -7,6 +7,12 @@ use crate::pokemon::{Ability, Pokemon};
 use colored::*;
 use std::io::{self, Write};
 
+enum MoreDetailsOption {
+    Exit,
+    Abilities,
+    SearchPokemon,
+}
+
 fn main() {
     loop {
         let pokemon_name = &name_prompt();
@@ -42,12 +48,6 @@ fn name_prompt() -> String {
             return input;
         }
     }
-}
-
-enum MoreDetailsOption {
-    Exit,
-    Abilities,
-    SearchPokemon,
 }
 
 fn more_details_prompt() -> MoreDetailsOption {

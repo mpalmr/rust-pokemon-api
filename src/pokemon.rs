@@ -21,7 +21,7 @@ pub struct Pokemon {
 
 impl Pokemon {
     pub fn new(name: &str) -> Result<Self, reqwest::Error> {
-        let response = api::PokemonResponse::get_by_name(name)?;
+        let response = api::get_by_name(name)?;
         Ok(Self {
             id: response.id,
             name: response.name,
@@ -77,16 +77,14 @@ mod api {
         pub is_hidden: bool,
     }
 
-    impl PokemonResponse {
-        pub fn get_by_name(name: &str) -> Result<Self, Error> {
-            Ok(Self::fetch(&format!("pokemon/{}", name))?)
-        }
+    pub fn get_by_name(name: &str) -> Result<PokemonResponse, Error> {
+        Ok(fetch_pokemon(&format!("pokemon/{}", name))?)
+    }
 
-        fn fetch(url: &str) -> Result<Self, Error> {
-            Ok(Client::new()
-                .get(&format!("https://pokeapi.co/api/v2/{}", url))
-                .send()?
-                .json()?)
-        }
+    fn fetch_pokemon(url: &str) -> Result<PokemonResponse, Error> {
+        Ok(Client::new()
+            .get(&format!("https://pokeapi.co/api/v2/{}", url))
+            .send()?
+            .json()?)
     }
 }
