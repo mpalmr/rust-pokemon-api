@@ -12,10 +12,10 @@ impl fmt::Display for Ability {
 }
 
 pub struct Pokemon {
-    id: u32,
-    name: String,
-    weight: u32,
-    height: u32,
+    pub id: u32,
+    pub name: String,
+    pub weight: u32,
+    pub height: u32,
     pub abilities: Vec<Ability>,
 }
 
