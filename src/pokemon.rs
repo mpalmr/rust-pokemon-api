@@ -21,7 +21,7 @@ pub struct Pokemon {
 
 impl Pokemon {
     pub fn new(name: &str) -> Result<Self, reqwest::Error> {
-        let response = api::Pokemon::get_by_name(name)?;
+        let response = api::PokemonResponse::get_by_name(name)?;
         Ok(Self {
             id: response.id,
             name: response.name,
@@ -57,27 +57,27 @@ mod api {
     use serde::Deserialize;
 
     #[derive(Deserialize)]
-    pub struct Pokemon {
+    pub struct PokemonResponse {
         pub id: u32,
         pub name: String,
         pub weight: u32,
         pub height: u32,
-        pub abilities: Vec<AbilityWrapper>,
+        pub abilities: Vec<AbilityResponseWrapper>,
     }
 
     #[derive(Deserialize)]
-    pub struct Ability {
+    pub struct AbilityResponse {
         pub name: String,
         pub url: String,
     }
 
     #[derive(Deserialize)]
-    pub struct AbilityWrapper {
-        pub ability: Ability,
+    pub struct AbilityResponseWrapper {
+        pub ability: AbilityResponse,
         pub is_hidden: bool,
     }
 
-    impl Pokemon {
+    impl PokemonResponse {
         pub fn get_by_name(name: &str) -> Result<Self, Error> {
             Ok(Self::fetch(&format!("pokemon/{}", name))?)
         }

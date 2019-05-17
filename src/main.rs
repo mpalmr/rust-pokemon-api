@@ -25,16 +25,23 @@ fn main() {
                     }
                 }
             }
+        } else {
+            println!("Could not find a pokemon by the name {}.\n", pokemon_name);
         }
     }
 }
 
 fn name_prompt() -> String {
-    let mut input = String::new();
-    print!("{} ", "Name a pokemon or \"q\" to quit:".green().bold());
-    io::stdout().flush().unwrap();
-    io::stdin().read_line(&mut input).unwrap();
-    input.trim().parse::<String>().unwrap()
+    loop {
+        let mut input = String::new();
+        print!("{} ", "Name a pokemon or \"q\" to quit:".green().bold());
+        io::stdout().flush().unwrap();
+        io::stdin().read_line(&mut input).unwrap();
+        let input = input.trim().parse::<String>().unwrap();
+        if !input.is_empty() {
+            return input;
+        }
+    }
 }
 
 enum MoreDetailsOption {
