@@ -1,8 +1,12 @@
 [package]
-name = "pokemon-api"
-version = "0.1.0"
+name = "pokeapi"
+version = "0.0.1"
 authors = ["Matthew Palmer <mspalmer91@gmail.com>"]
 edition = "2018"
+
+[lib]
+name = "pokeapi"
+path = "src/lib.rs"
 
 [dependencies]
 reqwest = "0.9.17"

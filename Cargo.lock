@@ -676,8 +676,8 @@ version = "0.3.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "pokemon-api"
-version = "0.1.0"
+name = "pokeapi"
+version = "0.0.1"
 dependencies = [
  "reqwest 0.9.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
