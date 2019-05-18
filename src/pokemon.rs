@@ -1,27 +1,16 @@
 use std::fmt;
 
-pub struct Ability {
-    pub name: String,
-}
-
-impl fmt::Display for Ability {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "Ability\n=======")?;
-        writeln!(f, "Name: {}", self.name)
-    }
-}
-
 pub struct Pokemon {
     pub id: u32,
     pub name: String,
     pub weight: u32,
     pub height: u32,
-    pub abilities: Vec<Ability>,
+    pub abilities: Vec<builder::Ability>,
 }
 
 impl Pokemon {
     pub fn new(name: &str) -> Result<Self, reqwest::Error> {
-        let response = api::fetch_pokemon(name)?;
+        let response: api::PokemonResponse = api::get_pokemon(name)?;
         Ok(Self {
             id: response.id,
             name: response.name,
@@ -30,11 +19,25 @@ impl Pokemon {
             abilities: response
                 .abilities
                 .into_iter()
-                .map(|wrapper| Ability {
-                    name: wrapper.ability.name,
+                .map(|a| builder::Ability {
+                    name: a.ability.name,
+                    url: a.ability.url,
                 })
                 .collect(),
         })
+    }
+
+    pub fn fetch_ability(&self, ability_name: &str) -> Result<Ability, &'static str> {
+        match self.abilities.iter().find(|a| a.name == ability_name) {
+            Some(builder) => {
+                if let Ok(ability) = builder.fetch() {
+                    Ok(Ability::new(ability))
+                } else {
+                    Err("could not fetch ability")
+                }
+            }
+            None => Err("ability not found"),
+        }
     }
 }
 
@@ -52,17 +55,54 @@ impl fmt::Display for Pokemon {
     }
 }
 
+pub struct Ability {
+    pub id: u32,
+    pub name: String,
+}
+
+impl Ability {
+    pub fn new(response: api::AbilityResponse) -> Self {
+        Self {
+            id: response.id,
+            name: response.name,
+        }
+    }
+}
+
+pub mod builder {
+    pub struct Ability {
+        pub name: String,
+        pub url: String,
+    }
+
+    impl Ability {
+        pub fn new(response: super::api::PokemonResponseAbility) -> Self {
+            Self {
+                name: response.name,
+                url: response.url,
+            }
+        }
+
+        pub fn fetch(&self) -> Result<super::api::AbilityResponse, reqwest::Error> {
+            let response: super::api::AbilityResponse = super::api::fetch(&self.url)?;
+            Ok(super::api::AbilityResponse {
+                id: response.id,
+                name: response.name,
+                is_main_series: response.is_main_series,
+            })
+        }
+    }
+}
+
 mod api {
     use reqwest::{Client, Error};
+    use serde::de::DeserializeOwned;
     use serde::Deserialize;
 
     const BASE_URL: &str = "https://pokeapi.co/api/v2/";
 
-    fn fetch<T>(url: &str) -> Result<T, Error> {
-        Ok(Client::new()
-            .get(&format!("https://pokeapi.co/api/v2/{}", url))
-            .send()?
-            .json()?)
+    pub fn fetch<T: DeserializeOwned>(url: &str) -> Result<T, Error> {
+        Ok(Client::new().get(url).send()?.json()?)
     }
 
     #[derive(Deserialize)]
@@ -82,16 +122,15 @@ mod api {
 
     #[derive(Deserialize)]
     pub struct PokemonResponseAbility {
-        pub id: u32,
         pub name: String,
         pub url: String,
     }
 
-    pub fn fetch_pokemon(name: &str) -> Result<PokemonResponse, Error> {
-        Ok(Client::new()
-            .get(&format!("{}pokemon/{}", BASE_URL, name))
-            .send()?
-            .json()?)
+    pub fn get_pokemon(name: &str) -> Result<PokemonResponse, Error> {
+        Ok(fetch::<PokemonResponse>(&format!(
+            "{}pokemon/{}",
+            BASE_URL, name
+        ))?)
     }
 
     #[derive(Deserialize)]
@@ -101,10 +140,10 @@ mod api {
         pub is_main_series: bool,
     }
 
-    pub fn fetch_ability(id: u32) -> Result<AbilityResponse, Error> {
-        Ok(Client::new()
-            .get(&format!("{}ability/{}", BASE_URL, id))
-            .send()?
-            .json()?)
+    pub fn get_ability(id: u32) -> Result<AbilityResponse, Error> {
+        Ok(fetch::<AbilityResponse>(&format!(
+            "{}ability/{}",
+            BASE_URL, id
+        ))?)
     }
 }

@@ -3,9 +3,9 @@
 
 mod pokemon;
 
-use crate::pokemon::{Ability, Pokemon};
-use std::str::FromStr;
+use crate::pokemon::Pokemon;
 use std::io::{self, Write};
+use std::str::FromStr;
 
 enum MoreDetailsOption {
     Exit,
@@ -26,8 +26,14 @@ fn main() {
                 MoreDetailsOption::Exit => break,
                 MoreDetailsOption::SearchPokemon => println!("\n"),
                 MoreDetailsOption::Abilities => {
-                    if let Some(ability) = ability_prompt(&pokemon) {
-                        println!("\n\n{}", ability);
+                    if let Some(builder) = ability_prompt(&pokemon) {
+                        if let Ok(ability) = pokemon.fetch_ability(&builder.name) {
+                            println!("ability: {}", ability.name);
+                        } else {
+                            println!("fetch_ability failed");
+                        };
+                    } else {
+                        println!("ability_prompt failed");
                     }
                 }
             }
@@ -65,7 +71,7 @@ fn more_details_prompt() -> MoreDetailsOption {
     }
 }
 
-fn ability_prompt(pokemon: &Pokemon) -> Option<&Ability> {
+fn ability_prompt(pokemon: &Pokemon) -> Option<&pokemon::builder::Ability> {
     loop {
         println!("\nPick one from the following abilities:");
         pokemon
@@ -82,7 +88,7 @@ fn ability_prompt(pokemon: &Pokemon) -> Option<&Ability> {
                 return None;
             }
             if let Some(ability) = pokemon.abilities.get(option - 1) {
-                return Some(&ability);
+                return Some(ability);
             }
         }
         println!("Invalid option\n");
