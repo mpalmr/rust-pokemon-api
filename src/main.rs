@@ -49,9 +49,9 @@ fn name_prompt() -> String {
         print!("Name a pokemon or \"q\" to quit: ");
         io::stdout().flush().unwrap();
         io::stdin().read_line(&mut input).unwrap();
-        let input = input.trim().to_string();
+        let input = input.trim();
         if !input.is_empty() {
-            return input;
+            return input.to_lowercase();
         }
     }
 }
