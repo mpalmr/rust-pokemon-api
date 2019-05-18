@@ -76,10 +76,9 @@ impl fmt::Display for Ability {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "\n\nID: {}", self.id)?;
         writeln!(f, "Name: {}", self.name)?;
-        for entry in &self.effect_entries {
-            writeln!(f, "Effect: {}", entry)?;
-        }
-        Ok(())
+        self.effect_entries
+            .iter()
+            .try_for_each(|entry| writeln!(f, "{}", entry))
     }
 }
 
