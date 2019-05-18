@@ -4,6 +4,7 @@
 mod pokemon;
 
 use crate::pokemon::{Ability, Pokemon};
+use std::str::FromStr;
 use std::io::{self, Write};
 
 enum MoreDetailsOption {
@@ -55,15 +56,11 @@ fn more_details_prompt() -> MoreDetailsOption {
     println!("[2] Search for new pokemon");
     println!("[0] Exit\n");
     loop {
-        let mut input = String::new();
-        print!("Option: ");
-        io::stdout().flush().unwrap();
-        io::stdin().read_line(&mut input).unwrap();
-        match input.trim().parse::<u8>().unwrap() {
-            0 => return MoreDetailsOption::Exit,
-            1 => return MoreDetailsOption::Abilities,
-            2 => return MoreDetailsOption::SearchPokemon,
-            _ => println!("Invalid option."),
+        match prompt_option::<u8>() {
+            Ok(0) => return MoreDetailsOption::Exit,
+            Ok(1) => return MoreDetailsOption::Abilities,
+            Ok(2) => return MoreDetailsOption::SearchPokemon,
+            _ => println!("Invalid option.\n"),
         }
     }
 }
@@ -80,18 +77,22 @@ fn ability_prompt(pokemon: &Pokemon) -> Option<&Ability> {
             });
         println!("[0] Go Back\n");
 
-        let mut input = String::new();
-        print!("Option: ");
-        io::stdout().flush().unwrap();
-        io::stdin().read_line(&mut input).unwrap();
-        let input = input.trim().parse::<usize>().unwrap();
-
-        if input == 0 {
-            return None;
+        if let Ok(option) = prompt_option::<usize>() {
+            if option == 0 {
+                return None;
+            }
+            if let Some(ability) = pokemon.abilities.get(option - 1) {
+                return Some(&ability);
+            }
         }
-        if let Some(ability) = pokemon.abilities.get(input - 1) {
-            return Some(&ability);
-        }
-        println!("Invalid option.");
+        println!("Invalid option\n");
     }
+}
+
+fn prompt_option<T: FromStr>() -> Result<T, T::Err> {
+    let mut input = String::new();
+    print!("Option: ");
+    io::stdout().flush().unwrap();
+    io::stdin().read_line(&mut input).unwrap();
+    Ok(input.trim().parse::<T>()?)
 }
