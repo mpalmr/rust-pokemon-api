@@ -19,10 +19,7 @@ impl Pokemon {
             abilities: response
                 .abilities
                 .into_iter()
-                .map(|a| builder::Ability {
-                    name: a.ability.name,
-                    url: a.ability.url,
-                })
+                .map(builder::Ability::new)
                 .collect(),
         })
     }
@@ -58,6 +55,7 @@ impl fmt::Display for Pokemon {
 pub struct Ability {
     pub id: u32,
     pub name: String,
+    pub effect_entries: Vec<String>,
 }
 
 impl Ability {
@@ -65,7 +63,23 @@ impl Ability {
         Self {
             id: response.id,
             name: response.name,
+            effect_entries: response
+                .effect_entries
+                .into_iter()
+                .map(|entry| entry.short_effect)
+                .collect(),
         }
+    }
+}
+
+impl fmt::Display for Ability {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "\n\nID: {}", self.id)?;
+        writeln!(f, "Name: {}", self.name)?;
+        for entry in &self.effect_entries {
+            writeln!(f, "Effect: {}", entry)?;
+        }
+        Ok(())
     }
 }
 
@@ -76,10 +90,10 @@ pub mod builder {
     }
 
     impl Ability {
-        pub fn new(response: super::api::PokemonResponseAbility) -> Self {
+        pub fn new(response: super::api::PokemonResponseAbilityWrapper) -> Self {
             Self {
-                name: response.name,
-                url: response.url,
+                name: response.ability.name,
+                url: response.ability.url,
             }
         }
 
@@ -89,6 +103,7 @@ pub mod builder {
                 id: response.id,
                 name: response.name,
                 is_main_series: response.is_main_series,
+                effect_entries: response.effect_entries,
             })
         }
     }
@@ -138,12 +153,12 @@ mod api {
         pub id: u32,
         pub name: String,
         pub is_main_series: bool,
+        pub effect_entries: Vec<AbilityResponseEffectEntry>,
     }
 
-    pub fn get_ability(id: u32) -> Result<AbilityResponse, Error> {
-        Ok(fetch::<AbilityResponse>(&format!(
-            "{}ability/{}",
-            BASE_URL, id
-        ))?)
+    #[derive(Deserialize)]
+    pub struct AbilityResponseEffectEntry {
+        pub effect: String,
+        pub short_effect: String,
     }
 }

@@ -28,7 +28,7 @@ fn main() {
                 MoreDetailsOption::Abilities => {
                     if let Some(builder) = ability_prompt(&pokemon) {
                         if let Ok(ability) = pokemon.fetch_ability(&builder.name) {
-                            println!("ability: {}", ability.name);
+                            println!("\n{}\n\n", ability);
                         } else {
                             println!("fetch_ability failed");
                         };
