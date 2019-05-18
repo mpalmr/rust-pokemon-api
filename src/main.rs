@@ -4,7 +4,6 @@
 mod pokemon;
 
 use crate::pokemon::{Ability, Pokemon};
-use colored::*;
 use std::io::{self, Write};
 
 enum MoreDetailsOption {
@@ -40,10 +39,10 @@ fn main() {
 fn name_prompt() -> String {
     loop {
         let mut input = String::new();
-        print!("{} ", "Name a pokemon or \"q\" to quit:".green().bold());
+        print!("Name a pokemon or \"q\" to quit: ");
         io::stdout().flush().unwrap();
         io::stdin().read_line(&mut input).unwrap();
-        let input = input.trim().parse::<String>().unwrap();
+        let input = input.trim().to_string();
         if !input.is_empty() {
             return input;
         }
@@ -51,18 +50,10 @@ fn name_prompt() -> String {
 }
 
 fn more_details_prompt() -> MoreDetailsOption {
-    println!(
-        "\n{}",
-        "What would you like to know more about?".green().bold()
-    );
-    println!("{} {}", "[1]".blue().bold(), "Abilities".blue());
-    println!(
-        "{} {}",
-        "[2]".blue().bold(),
-        "Search for new pokemon".blue()
-    );
-    println!("{} {}\n", "[0]".red().bold(), "Exit".red());
-
+    println!("What would you like to know more about?");
+    println!("[1] Abilities");
+    println!("[2] Search for new pokemon");
+    println!("[0] Exit\n");
     loop {
         let mut input = String::new();
         print!("Option: ");
@@ -72,29 +63,22 @@ fn more_details_prompt() -> MoreDetailsOption {
             0 => return MoreDetailsOption::Exit,
             1 => return MoreDetailsOption::Abilities,
             2 => return MoreDetailsOption::SearchPokemon,
-            _ => println!("{}", "Invalid option.".red()),
+            _ => println!("Invalid option."),
         }
     }
 }
 
 fn ability_prompt(pokemon: &Pokemon) -> Option<&Ability> {
     loop {
-        println!(
-            "\n{}",
-            "Pick one from the following abilities:".green().bold()
-        );
+        println!("\nPick one from the following abilities:");
         pokemon
             .abilities
             .iter()
             .enumerate()
             .for_each(|(i, ability)| {
-                println!(
-                    "{} {}",
-                    &format!("[{}]", (i + 1).to_string()).blue().bold(),
-                    ability.name.blue(),
-                )
+                println!("[{}] {}", (i + 1).to_string(), ability.name);
             });
-        println!("{} {}\n", "[0]".red().bold(), "Go Back".red());
+        println!("[0] Go Back\n");
 
         let mut input = String::new();
         print!("Option: ");
@@ -108,6 +92,6 @@ fn ability_prompt(pokemon: &Pokemon) -> Option<&Ability> {
         if let Some(ability) = pokemon.abilities.get(input - 1) {
             return Some(&ability);
         }
-        println!("{}", "Invalid option.".red());
+        println!("Invalid option.");
     }
 }
