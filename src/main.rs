@@ -25,20 +25,10 @@ fn main() {
             match more_details_prompt() {
                 MoreDetailsOption::Exit => break,
                 MoreDetailsOption::SearchPokemon => println!("\n"),
-                MoreDetailsOption::Abilities => {
-                    if let Some(builder) = ability_prompt(&pokemon) {
-                        if let Ok(ability) = pokemon.fetch_ability(&builder.name) {
-                            println!("\n{}\n\n", ability);
-                        } else {
-                            println!("fetch_ability failed");
-                        };
-                    } else {
-                        println!("ability_prompt failed");
-                    }
-                }
+                MoreDetailsOption::Abilities => ability_prompt(&pokemon),
             }
         } else {
-            println!("Could not find a pokemon by the name {}.\n", pokemon_name);
+            eprintln!("Could not find a pokemon by the name {}.\n", pokemon_name);
         }
     }
 }
@@ -66,12 +56,12 @@ fn more_details_prompt() -> MoreDetailsOption {
             Ok(0) => return MoreDetailsOption::Exit,
             Ok(1) => return MoreDetailsOption::Abilities,
             Ok(2) => return MoreDetailsOption::SearchPokemon,
-            _ => println!("Invalid option.\n"),
+            _ => eprintln!("Invalid option.\n"),
         }
     }
 }
 
-fn ability_prompt(pokemon: &Pokemon) -> Option<&pokemon::builder::Ability> {
+fn ability_prompt(pokemon: &Pokemon) {
     loop {
         println!("\nPick one from the following abilities:");
         pokemon
@@ -84,14 +74,15 @@ fn ability_prompt(pokemon: &Pokemon) -> Option<&pokemon::builder::Ability> {
         println!("[0] Go Back\n");
 
         if let Ok(option) = prompt_option::<usize>() {
-            if option == 0 {
-                return None;
-            }
-            if let Some(ability) = pokemon.abilities.get(option - 1) {
-                return Some(ability);
+            if let Some(builder) = pokemon.abilities.get(option - 1) {
+                if let Ok(ability) = pokemon.fetch_ability(&builder.name) {
+                    println!("\n{}\n\n", ability);
+                } else {
+                    eprintln!("Could not fetch ability information.\n");
+                };
             }
         }
-        println!("Invalid option\n");
+        eprintln!("Invalid option\n");
     }
 }
 
