@@ -21,7 +21,7 @@ pub struct Pokemon {
 
 impl Pokemon {
     pub fn new(name: &str) -> Result<Self, reqwest::Error> {
-        let response = api::get_by_name(name)?;
+        let response = api::fetch_pokemon(name)?;
         Ok(Self {
             id: response.id,
             name: response.name,
@@ -56,34 +56,54 @@ mod api {
     use reqwest::{Client, Error};
     use serde::Deserialize;
 
+    const BASE_URL: &str = "https://pokeapi.co/api/v2/";
+
+    fn fetch<T>(url: &str) -> Result<T, Error> {
+        Ok(Client::new()
+            .get(&format!("https://pokeapi.co/api/v2/{}", url))
+            .send()?
+            .json()?)
+    }
+
     #[derive(Deserialize)]
     pub struct PokemonResponse {
         pub id: u32,
         pub name: String,
         pub weight: u32,
         pub height: u32,
-        pub abilities: Vec<AbilityResponseWrapper>,
+        pub abilities: Vec<PokemonResponseAbilityWrapper>,
     }
 
     #[derive(Deserialize)]
-    pub struct AbilityResponse {
+    pub struct PokemonResponseAbilityWrapper {
+        pub ability: PokemonResponseAbility,
+        pub is_hidden: bool,
+    }
+
+    #[derive(Deserialize)]
+    pub struct PokemonResponseAbility {
+        pub id: u32,
         pub name: String,
         pub url: String,
     }
 
-    #[derive(Deserialize)]
-    pub struct AbilityResponseWrapper {
-        pub ability: AbilityResponse,
-        pub is_hidden: bool,
-    }
-
-    pub fn get_by_name(name: &str) -> Result<PokemonResponse, Error> {
-        Ok(fetch_pokemon(&format!("pokemon/{}", name))?)
-    }
-
-    fn fetch_pokemon(url: &str) -> Result<PokemonResponse, Error> {
+    pub fn fetch_pokemon(name: &str) -> Result<PokemonResponse, Error> {
         Ok(Client::new()
-            .get(&format!("https://pokeapi.co/api/v2/{}", url))
+            .get(&format!("{}pokemon/{}", BASE_URL, name))
+            .send()?
+            .json()?)
+    }
+
+    #[derive(Deserialize)]
+    pub struct AbilityResponse {
+        pub id: u32,
+        pub name: String,
+        pub is_main_series: bool,
+    }
+
+    pub fn fetch_ability(id: u32) -> Result<AbilityResponse, Error> {
+        Ok(Client::new()
+            .get(&format!("{}ability/{}", BASE_URL, id))
             .send()?
             .json()?)
     }
